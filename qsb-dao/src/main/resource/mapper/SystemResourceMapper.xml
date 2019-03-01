@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.SystemResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.SystemResource" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="access_url" property="accessUrl" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="SMALLINT" />
+    <result column="ref_group_id" property="refGroupId" jdbcType="CHAR" />
+    <result column="publisher" property="publisher" jdbcType="CHAR" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="upload_time" property="uploadTime" jdbcType="CHAR" />
+    <result column="size" property="size" jdbcType="BIGINT" />
+    <result column="storage_url" property="storageUrl" jdbcType="VARCHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="CHAR" />
+    <result column="display_order" property="displayOrder" jdbcType="INTEGER" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <select id="querySystemResourceByDeviceId" resultMap="BaseResultMap" parameterType="string">
+      select b.* from t_system_resource_link a left join t_system_resource b on a.res_id=b.id where a.delete_flag=0 and b.delete_flag=0 and
+      a.user_obj_id=#{id}
+  </select>
+  
+  <update id="updateResourceByObjId" parameterType="com.realtech.pandora.domain.SystemResource">
+  		update t_system_resource
+  		set access_url = #{accessUrl} , storage_url = #{storageUrl}, name = #{name}
+  		where id = (SELECT
+                       res_id
+                    FROM
+                       t_system_resource_link
+                    WHERE
+                       user_obj_id = #{id})
+  </update>
+
+  <select id="findResoureByObjId" parameterType="String" resultMap="BaseResultMap">
+  		SELECT
+   			 id, access_url, name
+        FROM
+             t_system_resource
+        WHERE
+          id = (SELECT
+                   res_id
+                FROM
+                  t_system_resource_link
+                WHERE
+                  user_obj_id = #{id})
+  </select>
+</mapper>

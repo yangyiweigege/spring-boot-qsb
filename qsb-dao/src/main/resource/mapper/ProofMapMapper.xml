@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.ProofMapMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.ProofMap" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="pid" property="pid" jdbcType="CHAR" />
+    <result column="object_id" property="objectId" jdbcType="CHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="flag" property="flag" jdbcType="VARCHAR" />
+    <result column="resource_id" property="resourceId" jdbcType="CHAR" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <select id="findProofDeviceByEquipment" parameterType="String" resultType="com.realtech.pandora.domain.DTO.ProofMapDTO">
+  		SELECT 
+    		a.flag, a.resource_id as resourceId, a.object_id as ObjectId, b.status
+		FROM
+    		(SELECT 
+       			 *
+    		 FROM
+       			 t_qms_proof_map
+    		 WHERE
+       			 pid = #{id} and type = 0) a
+       		 LEFT JOIN
+    		 t_qms_proof_device b ON a.object_id = b.id
+  </select>
+  
+  <select id="findByPid" parameterType="String" resultType="com.realtech.pandora.domain.DTO.ProofMapDTO">
+  		SELECT 
+    		flag, resource_id as resourceId, object_id as ObjectId, '0' as status , 'green' as color
+		FROM
+			t_qms_proof_map
+		WHERE
+			pid = #{id} and type = 1
+  </select>
+</mapper>

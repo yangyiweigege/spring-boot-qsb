@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.SystemResourceLinkMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.SystemResourceLink" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="res_id" property="resId" jdbcType="CHAR" />
+    <result column="user_obj_id" property="userObjId" jdbcType="CHAR" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

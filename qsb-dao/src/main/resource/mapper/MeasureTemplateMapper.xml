@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.MeasureTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.MeasureTemplate" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="proof_device_id" property="proofDeviceId" jdbcType="CHAR" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="fault_performance" property="faultPerformance" jdbcType="LONGVARCHAR" />
+    <result column="emergency_response" property="emergencyResponse" jdbcType="LONGVARCHAR" />
+    <result column="verification_item" property="verificationItem" jdbcType="LONGVARCHAR" />
+    <result column="verification_content" property="verificationContent" jdbcType="LONGVARCHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <insert id="insertBatch" parameterType="java.util.List">
+  		<!-- insert into t_qms_measure_template(id,proof_device_id,) -->
+  </insert>
+  <select id="findTemplateById" parameterType="string" resultType="com.realtech.pandora.domain.DTO.MeasureTemplateDTO">
+    SELECT
+      a.verification_item verificationItem,
+      a.verification_content verificationContent,
+      a.fault_performance faultPerformance,
+      a.emergency_response emergencyResponse,
+      a.note,
+      1 as isQualified
+    FROM
+     t_qms_measure_template a
+    WHERE
+     a.proof_device_id = #{id}
+    AND delete_flag = 0
+  </select>
+</mapper>

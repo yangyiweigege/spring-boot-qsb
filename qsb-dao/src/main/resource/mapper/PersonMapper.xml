@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.PersonMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.Person" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="nickle_name" property="nickleName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="TINYINT" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="photo_url" property="photoUrl" jdbcType="VARCHAR" />
+    <result column="department_id" property="departmentId" jdbcType="CHAR" />
+    <result column="position_id" property="positionId" jdbcType="CHAR" />
+    <result column="skillset_level" property="skillsetLevel" jdbcType="INTEGER" />
+    <result column="factory_id" property="factoryId" jdbcType="CHAR" />
+    <result column="home_address" property="homeAddress" jdbcType="VARCHAR" />
+    <result column="associated_obj_id" property="associatedObjId" jdbcType="INTEGER" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="rfid_card_no" property="rfidCardNo" jdbcType="VARCHAR" />
+    <result column="person_attribute" property="personAttribute" jdbcType="TINYINT" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <select id="queryPersonJoinLink" parameterType="String" resultMap="BaseResultMap">
+      select b.name,b.id from t_qms_proof_device_person_link a,t_bd_person b where a.person_id=b.id and
+      a.proof_device_id=#{id} and a.delete_flag=0
+  </select>
+
+
+  <select id="findSubmitPerson" resultMap="BaseResultMap" parameterType="java.util.List">
+  	select
+  		name,code,id,sex
+  	from t_bd_person where id in
+  	(
+   <foreach collection="list" item="item" separator=",">
+		#{item}
+	</foreach>
+	)
+    and delete_flag = 0
+  </select>
+  
+   <select id="findPersonByAlertId" parameterType="String" resultMap="BaseResultMap">
+  		SELECT 
+    		name, id
+		FROM
+   			t_bd_person
+		WHERE
+    		id IN (SELECT 
+           			 person_id
+       			 FROM
+         	         t_qms_person_alert_link
+     	         WHERE
+                   alert_id = #{id})
+   </select>
+</mapper>

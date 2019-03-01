@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.PersonProofLinkMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.PersonProofLink" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="object_id" property="objectId" jdbcType="CHAR" />
+    <result column="person_id" property="personId" jdbcType="CHAR" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+ <insert id="insertBatch" parameterType="list" >
+    insert into t_qms_person_proof_link(id,object_id,person_id,create_at,create_by,data_version,delete_flag) values
+   <foreach collection="list" item="item" index="index" separator=",">
+     (#{item.id},#{item.objectId},#{item.personId},#{item.createAt},#{item.createBy},#{item.dataVersion},0)
+   </foreach>
+ </insert>
+
+  <select id="queryPersonListJoinLink" parameterType="string" resultType="com.realtech.pandora.domain.Person" >
+    select b.* from t_qms_person_proof_link a,t_bd_person b where a.delete_flag=0 and b.delete_flag=0 and a.person_id=b.id
+    and a.object_id=#{objectId}
+  </select>
+  
+</mapper>

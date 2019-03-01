@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.FactoryLocationMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.FactoryLocation" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="local_name" property="localName" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="parent_location_id" property="parentLocationId" jdbcType="CHAR" />
+    <result column="is_root" property="isRoot" jdbcType="TINYINT" />
+    <result column="logistic_x_coordinate" property="logisticXCoordinate" jdbcType="NUMERIC" />
+    <result column="logistic_y_coordinate" property="logisticYCoordinate" jdbcType="NUMERIC" />
+    <result column="logistic_z_coordinate" property="logisticZCoordinate" jdbcType="NUMERIC" />
+    <result column="factory_id" property="factoryId" jdbcType="CHAR" />
+    <result column="associated_obj_id" property="associatedObjId" jdbcType="INTEGER" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="network_ip" property="networkIp" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+   <select id="findBindDeviceByPid" parameterType="String" resultMap="BaseResultMap">
+		select 
+			id,name,type 
+		from 
+			t_bd_factory_location
+		where  
+			parent_location_id = #{id}
+			   and delete_flag = 0
+	</select>
+	
+	 <select id="findBindDeviceByPidCount" parameterType="String" resultType="int">
+		select 
+			count(1)
+		from t_bd_factory_location
+		where  
+			parent_location_id = #{id}
+			and delete_flag = 0
+	</select>
+  
+
+    <select id="queryWorkShopById" parameterType="string" resultMap="BaseResultMap">
+        select * from t_bd_factory_location where delete_flag=0 and id =
+        (select parent_location_id from t_bd_factory_location where delete_flag=0 and id =
+        (select parent_location_id from t_bd_factory_location where delete_flag=0 and id=#{id}))
+    </select>
+</mapper>

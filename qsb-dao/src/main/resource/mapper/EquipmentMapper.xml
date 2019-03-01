@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.EquipmentMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.Equipment" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+     <id column="id" property="id" jdbcType="CHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="local_name" property="localName" jdbcType="NVARCHAR" />
+    <result column="factory_location_id" property="factoryLocationId" jdbcType="CHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="model_id" property="modelId" jdbcType="VARCHAR" />
+    <result column="manufacture_date" property="manufactureDate" jdbcType="CHAR" />
+    <result column="start_to_use_date" property="startToUseDate" jdbcType="CHAR" />
+    <result column="end_to_use_date" property="endToUseDate" jdbcType="CHAR" />
+    <result column="rated_capacity" property="ratedCapacity" jdbcType="NUMERIC" />
+    <result column="rated_production_beating" property="ratedProductionBeating" jdbcType="NUMERIC" />
+    <result column="production_beating_uom_id" property="productionBeatingUomId" jdbcType="CHAR" />
+    <result column="lifetime" property="lifetime" jdbcType="NUMERIC" />
+    <result column="purchase_price" property="purchasePrice" jdbcType="NUMERIC" />
+    <result column="accumulated_depreciation" property="accumulatedDepreciation" jdbcType="NUMERIC" />
+    <result column="is_special" property="isSpecial" jdbcType="TINYINT" />
+    <result column="power" property="power" jdbcType="NUMERIC" />
+    <result column="power_uom_id" property="powerUomId" jdbcType="CHAR" />
+    <result column="associated_obj_id" property="associatedObjId" jdbcType="INTEGER" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="manufacturer_id" property="manufacturerId" jdbcType="CHAR" />
+    <result column="manufacturer_equipment_code" property="manufacturerEquipmentCode" jdbcType="VARCHAR" />
+    <result column="photo_res_user_obj_id" property="photoResUserObjId" jdbcType="CHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="CHAR" />
+    <result column="type_id" property="typeId" jdbcType="CHAR" />
+    <result column="classification" property="classification" jdbcType="TINYINT" />
+    <result column="user_department_id" property="userDepartmentId" jdbcType="CHAR" />
+    <result column="user_id" property="userId" jdbcType="CHAR" />
+    <result column="depreciation_rate" property="depreciationRate" jdbcType="NUMERIC" />
+    <result column="residual_value" property="residualValue" jdbcType="NUMERIC" />
+    <result column="weight" property="weight" jdbcType="NUMERIC" />
+    <result column="installation_date" property="installationDate" jdbcType="CHAR" />
+    <result column="acceptance_date" property="acceptanceDate" jdbcType="CHAR" />
+    <result column="qr_code_picture_url" property="qrCodePictureUrl" jdbcType="VARCHAR" />
+    <result column="acceptance_application_form_id" property="acceptanceApplicationFormId" jdbcType="CHAR" />
+    <result column="equipment_resume_id" property="equipmentResumeId" jdbcType="CHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <select id="findRealDeviceByFactoryIds" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT 
+      		id, name, model_id
+		FROM
+    		t_bd_equipment
+		WHERE
+    		factory_location_id IN
+         	(
+  				 <foreach collection="list" item="item" separator=",">
+					#{item}
+				</foreach>
+			)
+			and delete_flag = 0
+  </select>
+  
+  <select id="findEquipmentByPid" parameterType="String" resultMap="BaseResultMap">
+  		 SELECT 
+      		id, name, model_id
+		 FROM
+    		t_bd_equipment
+    	 WHERE id IN (SELECT
+    		  	        object_id 
+    		          FROM 
+    			        t_qms_proof_map 
+    	              WHERE
+    			         pid = #{id} )
+  </select>
+
+</mapper>

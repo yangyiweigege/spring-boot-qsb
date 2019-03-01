@@ -1,0 +1,84 @@
+server:
+  port: 8092
+  context-path: /pandora-verification-portal
+spring:
+  #配置服务追踪
+  #zipkin:
+   # base-url: http://localhost:9411
+  application:
+    name: qsb
+  #配置sqlserver连接
+  datasource:
+    driver-class-name: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    url: "jdbc:sqlserver://192.168.200.175:1433;databaseName=XIHU"
+    username: "sa"
+    password: "rt.123"
+#    url: "jdbc:sqlserver://192.168.40.48:1433;databaseName=KPSNC_QSB"
+#    username: "sa"
+#    password: "Admin2012"
+  #配置热部署工具   
+  #devtools:
+   # restart:
+    #  enabled: true
+      #additional-paths: src/main/java
+    #  exclude: templates/**
+#配置tk-mybatis
+mybatis:
+  type-aliases-package: com.realtech.pandora.domain
+  mapper-locations: "classpath*:/mapper/*Mapper.xml"
+
+#配置分页助手
+pagehelper:
+  helperDialect: sqlServer
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+        
+#配置日志
+logging:
+  path: /com/realtech/pandora
+  level: 
+   com.realtech.pandora: debug
+   
+upload: #文件上传配置
+  localtion:  #配置默认文件保存位置
+    windows: D:/photos/
+    linux:
+
+#系统配置
+system:
+  uumsPrefix : 
+#
+  #
+  suspect:
+    #是否支持追溯
+    trace: true
+
+  # 单点登录配置
+  auth:
+    # 是否启用拦截器
+    enable: true
+    # 登录地址，更换成实际登录服务器IP
+    login-host: "192.16.32.33"
+    # 登录端口号
+    login-port: 8086
+    # 接口中心主机地址，更换成实际服务器IP
+    login-api-host: "172.16.32.33"
+    # 接口中心端口号
+    login-api-port: 8086
+    # 分配的应用编号，该编号可区分登入服务的应用
+    login-api-appid: "U73NNM4V"
+    # 默认userID
+    default-userId: 1
+    #是否启用地点权限校验拦截器
+    location-check: true
+  token:
+    portalKey: qms
+    #
+    cProtonUrl: "/api/mt"
+    #检测token url
+    checkTokenUrl: "/api/ct"
+    #退出登录地址
+    userLogoutUrl: "/api/loginOut"
+    #门户首页 改成我们项目的首页
+    homepage: "http://172.16.32.33:8092"

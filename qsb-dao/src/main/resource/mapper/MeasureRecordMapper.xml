@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.MeasureRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.MeasureRecord" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="proof_device_id" property="proofDeviceId" jdbcType="CHAR" />
+    <result column="reporter_person_user_obj_id" property="reporterPersonUserObjId" jdbcType="CHAR" />
+    <result column="report_time" property="reportTime" jdbcType="CHAR" />
+    <result column="fixer_person_user_obj_id" property="fixerPersonUserObjId" jdbcType="CHAR" />
+    <result column="fix_time" property="fixTime" jdbcType="CHAR" />
+    <result column="bach" property="bach" jdbcType="INTEGER" />
+    <result column="terminal" property="terminal" jdbcType="TINYINT" />
+    <result column="is_qualified" property="isQualified" jdbcType="TINYINT" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="fault_performance" property="faultPerformance" jdbcType="LONGVARCHAR" />
+    <result column="emergency_response" property="emergencyResponse" jdbcType="LONGVARCHAR" />
+    <result column="verification_item" property="verificationItem" jdbcType="LONGVARCHAR" />
+    <result column="verification_content" property="verificationContent" jdbcType="LONGVARCHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <select id="queryMaxBach" resultType="java.lang.Integer" parameterType="string">
+      select max (bach) FROM t_qms_measure_record where delete_flag=0 and proof_device_id=#{id}
+  </select>
+  
+  <select id="queryMeasureRecordList" parameterType="String"
+          resultType="com.realtech.pandora.domain.DTO.MeasureRecordDTO">
+   select id,verification_item verificationItem,proof_device_id proofDeviceId,verification_content verificationContent,
+              fault_performance faultPerformance,emergency_response emergencyResponse,reporter_person_user_obj_id reporterPersonUserObjId,
+              fixer_person_user_obj_id fixerPersonUserObjId,report_time reportTime,fix_time fixTime,terminal Terminal,bach
+    from t_qms_measure_record
+    where bach=(select max(bach) from t_qms_measure_record where proof_device_id=#{id} and delete_flag=0)
+    and proof_device_id=#{id}
+    and is_qualified=0 and delete_flag=0 order by create_at desc
+  </select>
+
+    <select id="queryReportTime" parameterType="string" resultType="string">
+        select Top 1 report_time from t_qms_measure_record where delete_flag=0  and proof_device_id=#{proofDeviceId} order by
+        report_time desc
+    </select>
+
+    <select id="findRecordByProofDeviceIdWithBach" resultMap="BaseResultMap">
+        SELECT
+            verification_item,
+            verification_content,
+            fault_performance,
+            emergency_response,
+            note,
+            is_qualified
+        FROM
+            t_qms_measure_record
+        WHERE
+            proof_device_id = #{id}
+        AND bach = #{bach}
+        AND delete_flag = 0
+    </select>
+
+    <update id="updateMeasureRecord" parameterType="com.realtech.pandora.domain.MeasureRecord" >
+        UPDATE t_qms_measure_record
+        SET fixer_person_user_obj_id = #{fixerPersonUserObjId},
+         fix_time = #{fixTime},
+         update_at = #{updateAt},
+         update_by =#{updateBy}
+        WHERE
+            proof_device_id = #{proofDeviceId}
+        AND bach =#{bach}
+        AND delete_flag = 0
+    </update>
+
+    <insert id="insertBach" parameterType="list" >
+        <foreach collection="list" item="item">
+            insert into t_qms_measure_record(id, proof_device_id, fault_performance, emergency_response, verification_item, verification_content,
+            reporter_person_user_obj_id, report_time, bach, terminal, is_qualified, create_at, create_by, data_version, delete_flag, note)
+            values
+            (#{item.id}, #{item.proofDeviceId}, #{item.faultPerformance}, #{item.emergencyResponse}, #{item.verificationItem}, #{item.verificationContent},  #{item.reporterPersonUserObjId},
+            #{item.reportTime}, #{item.bach}, #{item.terminal}, #{item.isQualified}, #{item.createAt}, #{item.createBy}, #{item.dataVersion}, 0, #{item.note})
+        </foreach>
+    </insert>
+
+    <update id="updateBach" parameterType="list">
+        <foreach collection="list" item="item">
+             update t_qms_measure_record set
+            is_qualified = #{item.isQualified}, update_at = #{item.updateAt}, update_by = #{item.updateBy} where proof_device_id =
+            #{item.proofDeviceId} and delete_flag = 0 and convert(nvarchar(max),verification_item) = #{item.verificationItem} and bach = #{item.bach}
+        </foreach>
+    </update>
+
+</mapper>

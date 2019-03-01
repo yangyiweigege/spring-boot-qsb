@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.realtech.pandora.dao.ProofDeviceMapper" >
+  <resultMap id="BaseResultMap" type="com.realtech.pandora.domain.ProofDevice" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="process" property="process" jdbcType="VARCHAR" />
+    <result column="proof_type" property="proofType" jdbcType="TINYINT" />
+    <result column="equipment_id" property="equipmentId" jdbcType="CHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="installation_time" property="installationTime" jdbcType="CHAR" />
+    <result column="is_item" property="isItem" jdbcType="TINYINT" />
+    <result column="maintenance_time" property="maintenanceTime" jdbcType="INTEGER" />
+    <result column="maintenance_time_unit" property="maintenanceTimeUnit" jdbcType="TINYINT" />
+    <result column="maintenance_time_num" property="maintenanceTimeNum" jdbcType="INTEGER" />
+    <result column="verification_time" property="verificationTime" jdbcType="INTEGER" />
+    <result column="verification_time_unit" property="verificationTimeUnit" jdbcType="TINYINT" />
+    <result column="verification_time_num" property="verificationTimeNum" jdbcType="INTEGER" />
+    <result column="verification_method" property="verificationMethod" jdbcType="TINYINT" />
+    <result column="proof_category" property="proofCategory" jdbcType="TINYINT" />
+    <result column="factory_id" property="factoryId" jdbcType="CHAR" />
+    <result column="create_at" property="createAt" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="CHAR" />
+    <result column="update_at" property="updateAt" jdbcType="CHAR" />
+    <result column="update_by" property="updateBy" jdbcType="CHAR" />
+    <result column="delete_at" property="deleteAt" jdbcType="CHAR" />
+    <result column="delete_by" property="deleteBy" jdbcType="CHAR" />
+    <result column="data_version" property="dataVersion" jdbcType="INTEGER" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+    <result column="failure_mode" property="failureMode" jdbcType="LONGVARCHAR" />
+    <result column="purpose" property="purpose" jdbcType="LONGVARCHAR" />
+    <result column="proof_device_desc" property="desc" jdbcType="LONGVARCHAR" />
+    <result column="note" property="note" jdbcType="LONGVARCHAR" />
+    <result column="report_time" property="reportTime" jdbcType="CHAR" />
+  </resultMap>
+
+  <select id="queryErrorRecord" parameterType="com.realtech.pandora.domain.DTO.ProofDeviceDTO"
+          resultType="com.realtech.pandora.domain.DTO.ProofDeviceDTO" >
+      <!--用#{}传值到模糊查询时打印的sql语句数据库可以查到，但是mybatis返回不出结果不知道什么原因，只能用${}来传值-->
+    select
+      a.id,b.name factoryName,c.name equipmentName,a.code,a.process,a.name,a.proof_type proofType,a.is_item isItem,d.persons,
+      a.verification_time verificationTime,a.verification_time_unit verificationTimeUnit,a.verification_time_num verificationTimeNum,
+      a.status,case when a.status=0 then '运行中' else '已失效' end statusStr,a.installation_time installationTime,a.update_at updateAt,a.failure_mode failureMode,
+      a.maintenance_time maintenanceTime,a.maintenance_time_unit maintenanceTimeUnit,a.maintenance_time_num maintenanceTimeNum,a.verification_method verificationMethod,
+      a.proof_category proofCategory,a.purpose,a.proof_device_desc proofDeviceDesc,f.id
+      factoryLocationId,f.name location, a.report_time reportTime,g.name imageName,
+      (
+      CONVERT (
+          VARCHAR (2),
+          a.verification_time
+          ) + (
+          CASE
+          WHEN a.verification_time_unit = 0 THEN
+          '天'
+          WHEN a.verification_time_unit = 1 THEN
+          '周'
+          WHEN a.verification_time_unit = 2 THEN
+          '月'
+          WHEN a.verification_time_unit = 3 THEN
+          '时'
+          WHEN a.verification_time_unit = 4 THEN
+          '分'
+          ELSE
+          '秒'
+          END
+      ) + CONVERT (
+          VARCHAR (2),
+          a.maintenance_time_num
+          ) + '次'
+      ) AS verificationNumStr
+    from
+      (select * from t_qms_proof_device where delete_flag=0
+      <if test="id != null and id != ''">
+          and id = #{id}
+      </if>
+      <if test="name != null and name != ''">
+          and name LIKE CONCAT(CONCAT('%',${name}),'%')
+      </if>
+      <if test="process !=null and process != ''">
+          and process LIKE CONCAT(CONCAT('%',${process}),'%')
+      </if>
+      <if test="proofType != null and proofType >=0">
+          and proof_type = #{proofType}
+      </if>
+      <if test="isItem != null and isItem >=0">
+          and is_item = #{isItem}
+      </if>
+      <if test="status != null and status >=0">
+          and status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        and report_time &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        and #{endTime} &gt;= report_time
+      </if>)a
+      left join
+      (select id,name from t_bd_factory where delete_flag=0) b on a.factory_id=b.id
+      left join
+      (select id,name,factory_location_id from t_bd_equipment where  delete_flag=0 ) c on c.id=a.equipment_id
+      left join
+      (select distinct persons,proof_device_id from t_qms_proof_device_person_link where delete_flag=0) d on d.proof_device_id=a.id
+      left join
+      (select id,name from t_bd_factory_location where delete_flag=0) f on f.id=c.factory_location_id
+      left join
+      (SELECT res_id,user_obj_id FROM t_system_resource_link)e on e.user_obj_id=a.id
+      left join
+      (SELECT id, access_url, name FROM t_system_resource)g on g.id=e.res_id
+      <where>
+          <if test="equipmentId != null and equipmentId != ''">
+               f.id = #{equipmentId}
+          </if>
+          <if test="personName != null and personName != ''">
+              and d.persons LIKE CONCAT(CONCAT('%',${personName}),'%')
+          </if>
+          <if test="factoryId != null and factoryId != ''">
+              and b.id=#{factoryId}
+          </if>
+      </where>
+      order by a.create_at desc
+  </select>
+  
+  <select id="groupByEquipmentIds" parameterType="java.util.List" resultType="java.util.Map">
+  		SELECT 
+   			 equipment_id AS equipmentId, COUNT(1) AS exceptionCount
+		FROM
+    		 t_qms_proof_device
+		WHERE
+    		equipment_id IN 
+    		
+  				 <foreach collection="list" item="item" separator="," open="(" close=")" >
+					#{item}
+				</foreach>
+			 
+    		AND status = 1 and delete_flag = 0
+		GROUP BY equipment_id
+  </select>
+  
+  <select id="findDeviceBindProof" parameterType="String" resultMap="BaseResultMap">
+  		SELECT 
+    		name, code, id, equipment_id, status
+		FROM
+    		t_qms_proof_device
+		WHERE
+   		 equipment_id = (SELECT 
+            id
+        FROM
+            t_bd_equipment
+        WHERE
+            factory_location_id = #{id} and delete_flag = 0)
+  </select>
+  
+  <select id="findProofDeviceByPid" parameterType="String" resultMap="BaseResultMap">
+  		SELECT 
+    		name, code, id, equipment_id, status
+		FROM
+    		t_qms_proof_device
+		WHERE
+   		 id IN (SELECT 
+           	object_id	
+         FROM
+         	t_qms_proof_map
+         WHERE
+            pid = #{id} AND type = 0)
+  </select>
+  
+  
+  <select id="countDeviceBindProof" parameterType="String" resultType="int">
+  		SELECT 
+    		count(1)
+		FROM
+    		t_qms_proof_device
+		WHERE
+   		 equipment_id = (SELECT 
+            id
+        FROM
+            t_bd_equipment
+        WHERE
+            factory_location_id = #{id} and delete_flag = 0)
+  </select>
+  
+  <select id="countProofDeviceByPid" parameterType="String" resultType="int">
+  		SELECT 
+    		COUNT(1)
+		FROM
+    		t_qms_proof_device
+		WHERE
+   		 id IN (SELECT 
+           	object_id	
+         FROM
+         	t_qms_proof_map
+         WHERE
+            pid = #{id} AND type = 0)
+  </select>
+
+    <update id="updateReportTime" >
+        update t_qms_proof_device set report_time=#{reportTime} where id=#{id} and delete_flag = 0
+    </update>
+
+    <select id="exportProofList" resultType="com.realtech.pandora.domain.DTO.ProofDeviceDTO">
+        select
+            b.name factoryName,c.name equipmentName,a.code,a.process,a.name,a.proof_type proofType,a.is_item isItem,d.persons,a.failure_mode failureMode,c.factory_location_id factoryLocationId,
+            a.maintenance_time maintenanceTime,a.maintenance_time_unit maintenanceTimeUnit,a.maintenance_time_num maintenanceTimeNum,a.verification_time verificationTime,
+            a.verification_time_unit verificationTimeUnit,a.verification_time_num verificationTimeNum,a.verification_method verificationMethod
+        from
+            (select id,factory_id,equipment_id,code,process,name,proof_type,is_item,failure_mode,maintenance_time,maintenance_time_unit,maintenance_time_num,verification_time,
+            verification_time_unit,verification_time_num,verification_method,create_at from t_qms_proof_device where  delete_flag=0) a
+        left join
+           (select id,name from t_bd_factory where delete_flag=0) b on a.factory_id=b.id
+        left join
+           (select id,name,factory_location_id from t_bd_equipment where delete_flag=0) c on a.equipment_id=c.id
+        left join
+           (select distinct proof_device_id,persons from t_qms_proof_device_person_link where delete_flag=0) d on d.proof_device_id=a.id
+        <if test="factoryId != null and factoryId != ''">
+            where b.id=#{factoryId}
+        </if>
+         order by a.create_at desc
+    </select>
+
+    <select id="findProofDeviceByCode" parameterType="string" resultMap="BaseResultMap">
+        select id, name, code, process, proof_type, is_item, status from t_qms_proof_device where equipment_id =
+        (select id from t_bd_equipment where delete_flag=0 and code=#{code}) and delete_flag = 0
+    </select>
+
+    <select id="findProofDeviceById" parameterType="string" resultType="com.realtech.pandora.domain.DTO.ProofDeviceDTO">
+        SELECT
+            a.process,
+            a.code,
+            a.name,
+            a.proof_type proofType,
+            c.name AS location,
+            a.status,
+            d.persons AS persons,
+            a.installation_time installationTime,
+            a.update_at updateAt,
+            a.is_item isItem,
+            a.failure_mode failureMode,
+            a.verification_method verificationMethod,
+            a.proof_category proofCategory,
+            a.proof_device_desc proofDeviceDesc,
+            a.purpose,
+            (
+                CONVERT (
+                    VARCHAR (2),
+                    a.maintenance_time
+                ) + (
+                    CASE
+                    WHEN a.maintenance_time_unit = 0 THEN
+                        '天'
+                    WHEN a.maintenance_time_unit = 1 THEN
+                        '周'
+                    ELSE
+                        '月'
+                    END
+                ) + CONVERT (
+                    VARCHAR (2),
+                    a.maintenance_time_num
+                ) + '次'
+            ) AS maintenanceNumStr,
+            (
+                CONVERT (
+                    VARCHAR (2),
+                    a.verification_time
+                ) + (
+                    CASE
+                    WHEN a.verification_time_unit = 0 THEN
+                        '天'
+                    WHEN a.verification_time_unit = 1 THEN
+                        '周'
+                    WHEN a.verification_time_unit = 2 THEN
+                        '月'
+                    WHEN a.verification_time_unit = 3 THEN
+                        '时'
+                    WHEN a.verification_time_unit = 4 THEN
+                        '分'
+                    ELSE
+                        '秒'
+                    END
+                ) + CONVERT (
+                    VARCHAR (2),
+                    a.maintenance_time_num
+                ) + '次'
+            ) AS verificationNumStr
+
+        FROM
+            (select * from t_qms_proof_device where delete_flag=0 and id=#{id}) a
+        left join
+            (select factory_location_id,id from t_bd_equipment where delete_flag=0) b ON a.equipment_id = b.id
+        left join
+            (select id,name from t_bd_factory_location where delete_flag=0) c ON b.factory_location_id = c.id
+        left join
+            (select distinct proof_device_id,persons from t_qms_proof_device_person_link where delete_flag=0) d ON a.id = d.proof_device_id
+    </select>
+</mapper>
